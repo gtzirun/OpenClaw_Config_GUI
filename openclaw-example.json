@@ -1,0 +1,287 @@
+{
+    "meta": {
+        "lastTouchedVersion": "2026.1.29",
+        "lastTouchedAt": "2026-01-31T11:40:07.050Z"
+    },
+    "wizard": {
+        "lastRunAt": "2026-01-31T10:08:21.145Z",
+        "lastRunVersion": "2026.1.29",
+        "lastRunCommand": "onboard",
+        "lastRunMode": "local"
+    },
+    "auth": {
+        "profiles": {
+            "qwen-portal:default": {
+                "provider": "qwen-portal",
+                "mode": "oauth"
+            }
+        }
+    },
+    "models": {
+        "providers": {
+            "anthropic": {
+                "baseUrl": "https://api.--your-domain--/api",
+                "apiKey": "cr_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+                "models": [
+                    {
+                        "id": "claude-opus-4-5-20251101",
+                        "name": "Claude Opus 4.5",
+                        "api": "anthropic-messages",
+                        "reasoning": true,
+                        "input": [
+                            "text",
+                            "image"
+                        ],
+                        "cost": {
+                            "input": 0,
+                            "output": 0,
+                            "cacheRead": 0,
+                            "cacheWrite": 0
+                        },
+                        "contextWindow": 200000,
+                        "maxTokens": 32000
+                    },
+                    {
+                        "id": "claude-sonnet-4-5-20250929",
+                        "name": "Claude Sonnet 4.5",
+                        "api": "anthropic-messages",
+                        "reasoning": true,
+                        "input": [
+                            "text",
+                            "image"
+                        ],
+                        "cost": {
+                            "input": 0,
+                            "output": 0,
+                            "cacheRead": 0,
+                            "cacheWrite": 0
+                        },
+                        "contextWindow": 200000,
+                        "maxTokens": 32000
+                    },
+                    {
+                        "id": "claude-haiku-4-5-20251001",
+                        "name": "Claude Haiku 4.5",
+                        "api": "anthropic-messages",
+                        "reasoning": true,
+                        "input": [
+                            "text",
+                            "image"
+                        ],
+                        "cost": {
+                            "input": 0,
+                            "output": 0,
+                            "cacheRead": 0,
+                            "cacheWrite": 0
+                        },
+                        "contextWindow": 200000,
+                        "maxTokens": 32000
+                    }
+                ]
+            },
+            "demo-api": {
+                "baseUrl": "http://demoapi.--your-domain--/v1",
+                "apiKey": "sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+                "api": "openai-completions",
+                "models": [
+                    {
+                        "id": "claude-opus-4-5-20251101",
+                        "name": "Claude Opus 4.5 (Demo)",
+                        "reasoning": true,
+                        "input": [
+                            "text",
+                            "image"
+                        ],
+                        "cost": {
+                            "input": 0,
+                            "output": 0,
+                            "cacheRead": 0,
+                            "cacheWrite": 0
+                        },
+                        "contextWindow": 200000,
+                        "maxTokens": 32000
+                    },
+                    {
+                        "id": "claude-sonnet-4-5-20250929",
+                        "name": "Claude Sonnet 4.5 (Demo)",
+                        "reasoning": true,
+                        "input": [
+                            "text",
+                            "image"
+                        ],
+                        "cost": {
+                            "input": 0,
+                            "output": 0,
+                            "cacheRead": 0,
+                            "cacheWrite": 0
+                        },
+                        "contextWindow": 200000,
+                        "maxTokens": 32000
+                    },
+                    {
+                        "id": "claude-haiku-4-5-20251001",
+                        "name": "Claude Haiku 4.5 (Demo)",
+                        "reasoning": true,
+                        "input": [
+                            "text",
+                            "image"
+                        ],
+                        "cost": {
+                            "input": 0,
+                            "output": 0,
+                            "cacheRead": 0,
+                            "cacheWrite": 0
+                        },
+                        "contextWindow": 200000,
+                        "maxTokens": 32000
+                    }
+                ]
+            },
+            "qwen-portal": {
+                "baseUrl": "https://portal.qwen.ai/v1",
+                "apiKey": "qwen-oauth",
+                "api": "openai-completions",
+                "models": [
+                    {
+                        "id": "coder-model",
+                        "name": "Qwen Coder",
+                        "reasoning": false,
+                        "input": [
+                            "text"
+                        ],
+                        "cost": {
+                            "input": 0,
+                            "output": 0,
+                            "cacheRead": 0,
+                            "cacheWrite": 0
+                        },
+                        "contextWindow": 128000,
+                        "maxTokens": 8192
+                    },
+                    {
+                        "id": "vision-model",
+                        "name": "Qwen Vision",
+                        "reasoning": false,
+                        "input": [
+                            "text",
+                            "image"
+                        ],
+                        "cost": {
+                            "input": 0,
+                            "output": 0,
+                            "cacheRead": 0,
+                            "cacheWrite": 0
+                        },
+                        "contextWindow": 128000,
+                        "maxTokens": 8192
+                    }
+                ]
+            }
+        }
+    },
+    "agents": {
+        "defaults": {
+            "model": {
+                "primary": "anthropic/claude-opus-4-5-20251101",
+                "fallbacks": [
+                    "anthropic/claude-sonnet-4-5-20250929",
+                    "anthropic/claude-haiku-4-5-20251001",
+                    "demo-api/claude-opus-4-5-20251101"
+                ]
+            },
+            "models": {
+                "anthropic/claude-opus-4-5-20251101": {
+                    "alias": "opus"
+                },
+                "anthropic/claude-sonnet-4-5-20250929": {
+                    "alias": "sonnet"
+                },
+                "anthropic/claude-haiku-4-5-20251001": {
+                    "alias": "haiku"
+                },
+                "demo-api/claude-opus-4-5-20251101": {
+                    "alias": "demo-opus"
+                },
+                "demo-api/claude-sonnet-4-5-20250929": {
+                    "alias": "demo-sonnet"
+                },
+                "demo-api/claude-haiku-4-5-20251001": {
+                    "alias": "demo-haiku"
+                },
+                "qwen-portal/coder-model": {
+                    "alias": "qwen"
+                },
+                "qwen-portal/vision-model": {
+                    "alias": "qwen-vision"
+                }
+            },
+            "workspace": "/Users/root/.openclaw/workspace",
+            "maxConcurrent": 4,
+            "subagents": {
+                "maxConcurrent": 8
+            }
+        }
+    },
+    "messages": {
+        "ackReactionScope": "group-mentions"
+    },
+    "commands": {
+        "native": "auto",
+        "nativeSkills": "auto",
+        "restart": true
+    },
+    "hooks": {
+        "internal": {
+            "enabled": true,
+            "entries": {
+                "boot-md": {
+                    "enabled": true
+                },
+                "session-memory": {
+                    "enabled": true
+                }
+            }
+        }
+    },
+    "channels": {
+        "telegram": {
+            "enabled": true,
+            "dmPolicy": "pairing",
+            "botToken": "0000000000:xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+            "allowFrom": [
+                1234567890
+            ],
+            "groupPolicy": "allowlist",
+            "streamMode": "partial",
+            "proxy": "http://127.0.0.1:10808"
+        }
+    },
+    "gateway": {
+        "port": 18789,
+        "mode": "local",
+        "bind": "loopback",
+        "auth": {
+            "mode": "token",
+            "token": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+        },
+        "tailscale": {
+            "mode": "off",
+            "resetOnExit": false
+        }
+    },
+    "skills": {
+        "install": {
+            "nodeManager": "npm"
+        }
+    },
+    "plugins": {
+        "entries": {
+            "qwen-portal-auth": {
+                "enabled": true
+            },
+            "telegram": {
+                "enabled": true
+            }
+        }
+    }
+}

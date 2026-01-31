@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OpenClaw 配置管理器 🦞</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div class="app">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-left">
+                <h1 class="logo">🦞 OpenClaw Config</h1>
+            </div>
+            <div class="header-right">
+                <button class="theme-toggle" id="themeToggle" title="切换主题">
+                    🌙
+                </button>
+                <button class="btn btn-secondary" id="importBtn">
+                    <span class="icon">📥</span> 导入配置
+                </button>
+                <button class="btn btn-primary" id="exportBtn">
+                    <span class="icon">📤</span> 导出配置
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Sidebar -->
+            <nav class="sidebar">
+                <ul class="nav-list">
+                    <li class="nav-item active" data-section="providers">
+                        <span class="nav-icon">🏢</span>
+                        <span class="nav-text">模型提供商</span>
+                    </li>
+                    <li class="nav-item" data-section="agent">
+                        <span class="nav-icon">🤖</span>
+                        <span class="nav-text">Agent 设置</span>
+                    </li>
+                    <li class="nav-item" data-section="channels">
+                        <span class="nav-icon">📱</span>
+                        <span class="nav-text">渠道配置</span>
+                    </li>
+                    <li class="nav-item" data-section="gateway">
+                        <span class="nav-icon">🌐</span>
+                        <span class="nav-text">网关设置</span>
+                    </li>
+                    <li class="nav-item" data-section="raw">
+                        <span class="nav-icon">📝</span>
+                        <span class="nav-text">原始 JSON</span>
+                    </li>
+                    <li class="nav-item" data-section="commands">
+                        <span class="nav-icon">💻</span>
+                        <span class="nav-text">常用命令</span>
+                    </li>
+                </ul>
+            </nav>
+
+            <!-- Content Area -->
+            <main class="content">
+                <!-- Providers Section -->
+                <section class="section" id="section-providers">
+                    <div class="section-header">
+                        <h2>模型提供商</h2>
+                        <button class="btn btn-primary btn-sm" id="addProviderBtn">
+                            <span class="icon">+</span> 添加提供商
+                        </button>
+                    </div>
+                    <div class="providers-list" id="providersList">
+                        <!-- Providers will be rendered here -->
+                    </div>
+                </section>
+
+                <!-- Agent Section -->
+                <section class="section hidden" id="section-agent">
+                    <div class="section-header">
+                        <h2>Agent 设置</h2>
+                    </div>
+                    <div class="card">
+                        <div class="form-group">
+                            <label>主模型</label>
+                            <select id="primaryModel" class="select">
+                                <!-- Options will be populated -->
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>备用模型</label>
+                            <div id="fallbackModels" class="fallback-models">
+                                <!-- Fallback models will be rendered here -->
+                            </div>
+                            <button class="btn btn-secondary btn-sm" id="addFallbackBtn">
+                                <span class="icon">+</span> 添加备用模型
+                            </button>
+                        </div>
+                        <div class="form-group">
+                            <label>工作区路径</label>
+                            <input type="text" id="workspace" class="input" placeholder="/path/to/workspace">
+                        </div>
+                        <div class="form-group">
+                            <label>Agent 最大并发数</label>
+                            <input type="number" id="maxConcurrent" class="input" value="4" min="1" max="16">
+                        </div>
+                        <div class="form-group">
+                            <label>子 Agent 最大并发数</label>
+                            <input type="number" id="subagentMaxConcurrent" class="input" value="8" min="1" max="32">
+                        </div>
+                        <div class="form-group">
+                            <label>沙盒模式</label>
+                            <select id="sandboxMode" class="select">
+                                <option value="">默认</option>
+                                <option value="non-main">非主进程隔离 (non-main)</option>
+                                <option value="all">全部隔离 (all)</option>
+                                <option value="none">禁用 (none)</option>
+                            </select>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Channels Section -->
+                <section class="section hidden" id="section-channels">
+                    <div class="section-header">
+                        <h2>渠道配置</h2>
+                        <button class="btn btn-primary btn-sm" id="addChannelBtn">
+                            <span class="icon">+</span> 添加渠道
+                        </button>
+                    </div>
+                    <div id="channelsList" class="channels-list">
+                        <!-- Channels will be rendered here -->
+                    </div>
+                </section>
+
+                <!-- Gateway Section -->
+                <section class="section hidden" id="section-gateway">
+                    <div class="section-header">
+                        <h2>网关设置</h2>
+                    </div>
+                    <div class="card">
+                        <div class="form-group">
+                            <label>端口</label>
+                            <input type="number" id="gatewayPort" class="input" value="18789">
+                        </div>
+                        <div class="form-group">
+                            <label>绑定模式</label>
+                            <select id="gatewayBind" class="select">
+                                <option value="loopback">Loopback (本地)</option>
+                                <option value="tailnet">Tailnet</option>
+                                <option value="lan">LAN</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>认证 Token</label>
+                            <div class="input-group">
+                                <input type="password" id="gatewayToken" class="input" placeholder="认证 Token">
+                                <button class="btn btn-icon" id="toggleTokenBtn">👁️</button>
+                                <button class="btn btn-icon" id="generateTokenBtn">🎲</button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Raw JSON Section -->
+                <section class="section hidden" id="section-raw">
+                    <div class="section-header">
+                        <h2>原始 JSON</h2>
+                        <div class="section-actions">
+                            <button class="btn btn-secondary btn-sm" id="revertConfigBtn" title="恢复到上传的版本">
+                                <span class="icon">↩️</span> 恢复
+                            </button>
+                            <button class="btn btn-secondary btn-sm" id="saveCacheBtn" title="保存到缓存">
+                                <span class="icon">💾</span> 保存缓存
+                            </button>
+                            <button class="btn btn-secondary btn-sm" id="formatJsonBtn">格式化</button>
+                        </div>
+                    </div>
+                    <div class="cache-status" id="cacheStatus">
+                        <span class="status-dot"></span>
+                        <span class="status-text">未保存</span>
+                    </div>
+                    <div class="card">
+                        <textarea id="rawJson" class="code-editor" spellcheck="false"></textarea>
+                    </div>
+                </section>
+
+                <!-- Commands Section -->
+                <section class="section hidden" id="section-commands">
+                    <div class="section-header">
+                        <h2>常用命令</h2>
+                    </div>
+                    <div class="card">
+                        <div class="form-group">
+                            <label>用户名</label>
+                            <input type="text" id="cmdUsername" class="input" placeholder="root" value="root">
+                        </div>
+                        <div class="form-group">
+                            <label>OpenClaw 路径</label>
+                            <input type="text" id="cmdPath" class="input" value="/Users/root/.openclaw/"
+                                placeholder="/Users/username/.openclaw/">
+                        </div>
+                    </div>
+
+                    <div class="commands-list" id="commandsList">
+                        <!-- Commands will be rendered here -->
+                    </div>
+
+                    <!-- 使用说明 -->
+                    <div class="instructions-card">
+                        <div class="instructions-header">
+                            <span class="icon">📖</span>
+                            <h3>使用说明</h3>
+                        </div>
+                        <div class="instructions-content">
+                            <div class="instruction-section">
+                                <h4>🚀 快速开始</h4>
+                                <ol>
+                                    <li>点击「导入配置」上传你的 <code>openclaw.json</code> 文件</li>
+                                    <li>在各个版块中修改配置（提供商、Agent、渠道、网关）</li>
+                                    <li>点击「导出配置」下载修改后的配置文件</li>
+                                    <li>复制「写入配置文件」命令到终端执行</li>
+                                </ol>
+                            </div>
+                            <div class="instruction-section">
+                                <h4>💡 功能说明</h4>
+                                <ul>
+                                    <li><strong>模型提供商</strong>：管理 AI 模型 API 接入点和密钥</li>
+                                    <li><strong>Agent 设置</strong>：配置主模型、备用模型和并发数</li>
+                                    <li><strong>渠道配置</strong>：管理 Telegram、Discord 等消息渠道</li>
+                                    <li><strong>网关设置</strong>：配置本地网关端口和认证</li>
+                                    <li><strong>原始 JSON</strong>：直接编辑配置文件，支持恢复和缓存</li>
+                                </ul>
+                            </div>
+                            <div class="instruction-section">
+                                <h4>⚠️ 注意事项</h4>
+                                <ul>
+                                    <li>修改 API Key 后请妥善保管，避免泄露</li>
+                                    <li>写入配置前建议先执行「备份配置文件」命令</li>
+                                    <li>配置修改后需要重启网关才能生效</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </main>
+        </div>
+    </div>
+
+    <!-- Modal for Provider -->
+    <div class="modal-overlay hidden" id="providerModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 id="providerModalTitle">添加提供商</h3>
+                <button class="btn-close" id="closeProviderModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>提供商名称 *</label>
+                    <input type="text" id="providerName" class="input" placeholder="例如: anthropic, openai, demo-api">
+                </div>
+                <div class="form-group">
+                    <label>API Base URL *</label>
+                    <input type="text" id="providerBaseUrl" class="input" placeholder="https://api.example.com/v1">
+                </div>
+                <div class="form-group">
+                    <label>API Key *</label>
+                    <input type="text" id="providerApiKey" class="input" placeholder="sk-xxx 或 cr_xxx">
+                </div>
+                <div class="form-group">
+                    <label>API 模式</label>
+                    <select id="providerApiMode" class="select">
+                        <option value="openai-completions">OpenAI Completions</option>
+                        <option value="anthropic-messages">Anthropic Messages</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancelProviderBtn">取消</button>
+                <button class="btn btn-primary" id="saveProviderBtn">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Model -->
+    <div class="modal-overlay hidden" id="modelModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 id="modelModalTitle">添加模型</h3>
+                <button class="btn-close" id="closeModelModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="modelProviderName">
+                <div class="form-group">
+                    <label>模型 ID *</label>
+                    <input type="text" id="modelId" class="input" placeholder="例如: claude-opus-4-5-20251101">
+                </div>
+                <div class="form-group">
+                    <label>模型名称</label>
+                    <input type="text" id="modelName" class="input" placeholder="例如: Claude Opus 4.5">
+                </div>
+                <div class="form-group">
+                    <label>上下文窗口</label>
+                    <input type="number" id="modelContextWindow" class="input" value="200000">
+                </div>
+                <div class="form-group">
+                    <label>最大输出 Token</label>
+                    <input type="number" id="modelMaxTokens" class="input" value="32000">
+                </div>
+                <div class="form-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="modelReasoning" checked>
+                        <span>支持推理 (Reasoning)</span>
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="modelVision" checked>
+                        <span>支持图像输入</span>
+                    </label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancelModelBtn">取消</button>
+                <button class="btn btn-primary" id="saveModelBtn">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Channel -->
+    <div class="modal-overlay hidden" id="channelModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 id="channelModalTitle">添加渠道</h3>
+                <button class="btn-close" id="closeChannelModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>渠道类型 *</label>
+                    <select id="channelType" class="select">
+                        <option value="telegram">Telegram</option>
+                        <option value="discord">Discord</option>
+                        <option value="whatsapp">WhatsApp</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="channelEnabled" checked>
+                        <span>启用</span>
+                    </label>
+                </div>
+                <div class="form-group" id="telegramFields">
+                    <label>Bot Token *</label>
+                    <input type="text" id="channelBotToken" class="input" placeholder="123456:ABC-DEF...">
+                </div>
+                <div class="form-group">
+                    <label>允许的用户 ID（逗号分隔）</label>
+                    <input type="text" id="channelAllowFrom" class="input" placeholder="123456789, 987654321">
+                </div>
+                <div class="form-group">
+                    <label>代理地址（可选）</label>
+                    <input type="text" id="channelProxy" class="input" placeholder="http://127.0.0.1:10808">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancelChannelBtn">取消</button>
+                <button class="btn btn-primary" id="saveChannelBtn">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast hidden" id="toast">
+        <span class="toast-icon"></span>
+        <span class="toast-message"></span>
+    </div>
+
+    <!-- Hidden file input -->
+    <input type="file" id="fileInput" accept=".json" style="display: none;">
+
+    <script src="app.js"></script>
+</body>
+
+</html>
