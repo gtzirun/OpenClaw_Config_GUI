@@ -432,6 +432,7 @@ function saveProvider() {
     closeProviderModalHandler();
     renderProviders();
     updateModelSelectors();
+    onConfigChanged();
     showToast(editingProvider ? (isRenaming ? '提供商已重命名' : '提供商已更新') : '提供商已添加');
 }
 
@@ -443,6 +444,7 @@ function deleteProvider(name) {
     delete config.models.providers[name];
     renderProviders();
     updateModelSelectors();
+    onConfigChanged();
     showToast('提供商已删除');
 }
 
@@ -554,6 +556,7 @@ function saveModel() {
     closeModelModalHandler();
     renderProviders();
     updateModelSelectors();
+    onConfigChanged();
     showToast(editingModel !== null ? '模型已更新' : '模型已添加');
 }
 
@@ -566,6 +569,7 @@ function deleteModel(providerName, modelIndex) {
     config.models.providers[providerName].models.splice(modelIndex, 1);
     renderProviders();
     updateModelSelectors();
+    onConfigChanged();
     showToast('模型已删除');
 }
 
@@ -638,15 +642,18 @@ function addFallback() {
 
     config.agents.defaults.model.fallbacks.push('');
     renderFallbackModels();
+    onConfigChanged();
 }
 
 function updateFallback(index, value) {
     config.agents.defaults.model.fallbacks[index] = value;
+    onConfigChanged();
 }
 
 function removeFallback(index) {
     config.agents.defaults.model.fallbacks.splice(index, 1);
     renderFallbackModels();
+    onConfigChanged();
 }
 
 // ===== Channel 管理 =====
@@ -777,6 +784,7 @@ function saveChannel() {
 
     closeChannelModalHandler();
     renderChannels();
+    onConfigChanged();
     showToast(editingChannel ? '渠道已更新' : '渠道已添加');
 }
 
@@ -791,6 +799,7 @@ function deleteChannel(type) {
     }
 
     renderChannels();
+    onConfigChanged();
     showToast('渠道已删除');
 }
 
@@ -940,6 +949,7 @@ function initEventListeners() {
         if (!config.agents.defaults) config.agents.defaults = { model: {} };
         if (!config.agents.defaults.model) config.agents.defaults.model = {};
         config.agents.defaults.model.primary = e.target.value;
+        onConfigChanged();
     });
 
     // Gateway settings
@@ -949,6 +959,8 @@ function initEventListeners() {
     });
     elements.generateTokenBtn.addEventListener('click', () => {
         elements.gatewayToken.value = generateToken();
+        saveGatewaySettings();
+        onConfigChanged();
         showToast('已生成新的认证 Token');
     });
 
@@ -1055,7 +1067,7 @@ function initAgentSettingsListeners() {
 // ===== 主题切换 =====
 
 function initTheme() {
-    const savedTheme = localStorage.getItem('openclaw-theme') || 'dark';
+    const savedTheme = localStorage.getItem('openclaw-theme') || 'light';
     document.documentElement.setAttribute('data-theme', savedTheme);
     updateThemeIcon(savedTheme);
 }
@@ -1356,6 +1368,26 @@ function initExtendedFeatures() {
     // 命令输入
     initCommandsInput();
 
+    // Gateway 设置自动保存
+    if (elements.gatewayPort) {
+        elements.gatewayPort.addEventListener('change', () => {
+            saveGatewaySettings();
+            onConfigChanged();
+        });
+    }
+    if (elements.gatewayBind) {
+        elements.gatewayBind.addEventListener('change', () => {
+            saveGatewaySettings();
+            onConfigChanged();
+        });
+    }
+    if (elements.gatewayToken) {
+        elements.gatewayToken.addEventListener('change', () => {
+            saveGatewaySettings();
+            onConfigChanged();
+        });
+    }
+
     // 初始化缓存状态
     updateCacheStatus();
 }
@@ -1385,7 +1417,8 @@ function handleFileImportWithCache(event) {
             isModified = false;
             renderAll();
             updateCacheStatus();
-            renderCommands();
+            updateRawJsonDisplay();
+            renderCommands(); // 确保命令立即更新
             showToast(`配置文件 "${file.name}" 已导入`);
         } catch (err) {
             showToast('无法解析配置文件: ' + err.message, 'error');
